@@ -1,6 +1,6 @@
 # Coding Agent Benchmark
 
-A benchmark harness for evaluating and comparing coding agents (LLM-powered CLI tools) across a suite of synthetic software engineering tasks. Measures correctness, speed, and token efficiency.
+A benchmark harness for evaluating and comparing coding agents (LLM-powered CLI tools) across a suite of synthetic software engineering tasks. Measures correctness and speed.
 
 ## Overview
 
@@ -11,7 +11,6 @@ The harness runs each configured agent against a set of isolated coding tasks, t
 **Metrics collected per task:**
 - Test pass rate (correctness)
 - Wall-clock time
-- Input/output token usage
 
 ## Tasks
 
@@ -124,26 +123,33 @@ results/2026-02-18-154523/
 The terminal report shows a comparison table:
 
 ```
-==============================================================================
+==============================================================
   BENCHMARK RESULTS
-==============================================================================
+==============================================================
 
 TASK RESULTS
-------------------------------------------------------------------------------
+--------------------------------------------------------------
 Task                           claude-code     codex
-------------------------------------------------------------------------------
-00-smoke-test                  PASS 2/2 18s    PASS 2/2 45s
-01-python-bugfix-csv           PASS 4/4 25s    PASS 4/4 55s
-...
+--------------------------------------------------------------
+00-smoke-test                  PASS 2/2 20s    PASS 2/2 29s
+01-python-bugfix-csv           PASS 8/8 29s    PASS 8/8 49s
+02-c-bugfix-linkedlist         PASS 8/8 18s    PASS 8/8 57s
+03-typescript-feature-table-f  PASS 13/13 18s  PASS 13/13 37s
+04-python-feature-pagination   PASS 10/10 19s  PASS 10/10 59s
+05-typescript-scratch-task-qu  PASS 8/8 56s    PASS 8/8 60s
+06-cpp-scratch-lru-cache       PASS 9/9 56s    PASS 9/9 65s
+07-python-refactor-monolith    PASS 12/12 20s  PASS 12/12 43s
+08-typescript-refactor-callba  PASS 10/10 35s  PASS 10/10 59s
+09-c-multifile-segfault        PASS 8/8 69s    PASS 8/8 66s
+10-fullstack-angular-python    PASS 10/10 22s  PASS 10/10 44s
 
 SUMMARY
--------------------------------------------------------------------------
+---------------------------------------------------------
 Metric                    claude-code     codex
--------------------------------------------------------------------------
+---------------------------------------------------------
 Tasks fully passed        11/11           11/11
 Avg correctness           1.0             1.0
-Avg speed (s)             33.59           62.28
-Avg tokens                1539.0          125135.0
+Avg speed (s)             32.8            51.62
 ```
 
 ## Project Structure

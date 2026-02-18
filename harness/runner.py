@@ -1,4 +1,3 @@
-import json
 import shutil
 import subprocess
 import tempfile
@@ -14,8 +13,6 @@ class AgentResult:
     agent: str
     model: str | None
     wall_clock_seconds: float
-    input_tokens: int
-    output_tokens: int
     timed_out: bool
     error: str | None
     raw_output: str
@@ -68,49 +65,15 @@ class AgentRunner:
             error = f"Timed out after {self.config.timeout_seconds}s"
 
         elapsed = time.monotonic() - start
-        tokens = self.parse_token_usage(raw_output)
 
         return AgentResult(
             agent=self.config.name,
             model=self.config.model,
             wall_clock_seconds=round(elapsed, 2),
-            input_tokens=tokens.get("input_tokens", 0),
-            output_tokens=tokens.get("output_tokens", 0),
             timed_out=timed_out,
             error=error,
             raw_output=raw_output,
         )
-
-    def parse_token_usage(self, output: str) -> dict:
-        if not output.strip():
-            return {"input_tokens": 0, "output_tokens": 0}
-
-        if self.config.name == "claude-code":
-            try:
-                data = json.loads(output)
-                usage = data.get("usage", {})
-                return {
-                    "input_tokens": usage.get("input_tokens", 0),
-                    "output_tokens": usage.get("output_tokens", 0),
-                }
-            except json.JSONDecodeError:
-                return {"input_tokens": 0, "output_tokens": 0}
-
-        if self.config.name == "codex":
-            total_input = 0
-            total_output = 0
-            for line in output.strip().split("\n"):
-                try:
-                    event = json.loads(line)
-                    if event.get("type") == "turn.completed":
-                        usage = event.get("usage", {})
-                        total_input += usage.get("input_tokens", 0)
-                        total_output += usage.get("output_tokens", 0)
-                except json.JSONDecodeError:
-                    continue
-            return {"input_tokens": total_input, "output_tokens": total_output}
-
-        return {"input_tokens": 0, "output_tokens": 0}
 
     def cleanup(self):
         for d in self._temp_dirs:

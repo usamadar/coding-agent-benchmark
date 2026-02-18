@@ -90,8 +90,6 @@ def run_benchmark(tasks_dir: Path = None, config_path: Path = None, dry_run: boo
                     agent=agent_config.name,
                     model=agent_config.model,
                     wall_clock_seconds=0.0,
-                    input_tokens=0,
-                    output_tokens=0,
                     timed_out=False,
                     error=None,
                     raw_output="(dry run)",
@@ -117,8 +115,6 @@ def run_benchmark(tasks_dir: Path = None, config_path: Path = None, dry_run: boo
                 tests_total=test_result.tests_total,
                 correctness=test_result.tests_passed / test_result.tests_total if test_result.tests_total else 0,
                 wall_clock_seconds=agent_result.wall_clock_seconds,
-                input_tokens=agent_result.input_tokens,
-                output_tokens=agent_result.output_tokens,
                 timed_out=agent_result.timed_out,
                 error=agent_result.error or test_result.error,
             )
@@ -140,8 +136,6 @@ def run_benchmark(tasks_dir: Path = None, config_path: Path = None, dry_run: boo
                 "tests_total": test_result.tests_total,
                 "tests_passed": test_result.tests_passed,
                 "wall_clock_seconds": agent_result.wall_clock_seconds,
-                "input_tokens": agent_result.input_tokens,
-                "output_tokens": agent_result.output_tokens,
                 "timed_out": agent_result.timed_out,
                 "error": agent_result.error or test_result.error,
             }, indent=2))

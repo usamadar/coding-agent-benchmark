@@ -52,7 +52,6 @@ def format_report(scores: list[TaskScore]) -> str:
         ("Tasks fully passed", lambda s: f"{s['tasks_fully_passed']}/{s['total_tasks']}"),
         ("Avg correctness", lambda s: str(s["avg_correctness"])),
         ("Avg speed (s)", lambda s: str(s["avg_speed_seconds"])),
-        ("Avg tokens", lambda s: str(s["avg_total_tokens"])),
     ]
 
     for metric_name, fmt in metrics:

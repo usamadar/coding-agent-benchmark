@@ -1,4 +1,3 @@
-import json
 import tempfile
 from pathlib import Path
 from unittest.mock import patch, MagicMock
@@ -36,29 +35,3 @@ def test_copy_tests_into_workspace(tmp_path):
     ))
     runner.copy_tests(tests_dir, workspace)
     assert (workspace / "tests" / "test_main.py").exists()
-
-
-def test_parse_claude_output_extracts_tokens():
-    output = json.dumps({
-        "result": "Done",
-        "usage": {"input_tokens": 1000, "output_tokens": 500},
-        "session_id": "abc123"
-    })
-    runner = AgentRunner(AgentConfig(
-        name="claude-code", command="claude", args=[], model=None, timeout_seconds=60
-    ))
-    tokens = runner.parse_token_usage(output)
-    assert tokens == {"input_tokens": 1000, "output_tokens": 500}
-
-
-def test_parse_codex_output_extracts_tokens():
-    lines = [
-        json.dumps({"type": "turn.completed", "usage": {"input_tokens": 2000, "output_tokens": 800}}),
-        json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": "Done"}}),
-    ]
-    output = "\n".join(lines)
-    runner = AgentRunner(AgentConfig(
-        name="codex", command="codex", args=[], model=None, timeout_seconds=60
-    ))
-    tokens = runner.parse_token_usage(output)
-    assert tokens == {"input_tokens": 2000, "output_tokens": 800}

@@ -10,8 +10,6 @@ class TaskScore:
     tests_total: int
     correctness: float
     wall_clock_seconds: float
-    input_tokens: int
-    output_tokens: int
     timed_out: bool
     error: str | None
 
@@ -32,17 +30,11 @@ def compute_summary(scores: list[TaskScore]) -> dict:
             sum(s.wall_clock_seconds for s in non_timed_out) / len(non_timed_out)
             if non_timed_out else 0
         )
-        avg_tokens = (
-            sum(s.input_tokens + s.output_tokens for s in non_timed_out) / len(non_timed_out)
-            if non_timed_out else 0
-        )
-
         summary[agent] = {
             "total_tasks": total_tasks,
             "tasks_fully_passed": fully_passed,
             "avg_correctness": round(avg_correctness, 2),
             "avg_speed_seconds": round(avg_speed, 2),
-            "avg_total_tokens": round(avg_tokens, 2),
             "scores": [_score_to_dict(s) for s in agent_scores],
         }
 
@@ -58,8 +50,6 @@ def _score_to_dict(s: TaskScore) -> dict:
         "tests_total": s.tests_total,
         "correctness": s.correctness,
         "wall_clock_seconds": s.wall_clock_seconds,
-        "input_tokens": s.input_tokens,
-        "output_tokens": s.output_tokens,
         "timed_out": s.timed_out,
         "error": s.error,
     }
