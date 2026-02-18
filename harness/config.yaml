@@ -27,7 +27,7 @@ agents:
       - "-m"
       - "{model}"
       - "-c"
-      - 'model_reasoning_effort="xhigh"'
+      - 'model_reasoning_effort="high"'
     model: "gpt-5.3-codex"
     timeout_seconds: 300
 
