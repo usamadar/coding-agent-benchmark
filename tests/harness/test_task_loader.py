@@ -38,6 +38,7 @@ def test_task_fields_populated(tmp_path):
     task = load_tasks(tmp_path)[0]
     assert task.prompt == "Fix the bug in main.py"
     assert task.language == "python"
+    assert task.test_languages == ["python"]
     assert task.category == "bugfix"
     assert task.timeout_seconds == 120
     assert task.repo_dir.exists()
@@ -50,3 +51,15 @@ def test_load_tasks_sorted_by_name(tmp_path):
     tasks = load_tasks(tmp_path)
     assert tasks[0].name == "01-python-bugfix"
     assert tasks[1].name == "03-ts-feature"
+
+
+def test_load_tasks_uses_test_languages_override(tmp_path):
+    task_dir = _make_task_dir(tmp_path, "01-fullstack", "python", "feature")
+    (task_dir / "metadata.json").write_text(json.dumps({
+        "language": "python",
+        "test_languages": ["python", "typescript"],
+        "category": "feature",
+        "timeout_seconds": 120,
+    }))
+    task = load_tasks(tmp_path)[0]
+    assert task.test_languages == ["python", "typescript"]

@@ -12,6 +12,40 @@ from harness.scoring import TaskScore, compute_summary
 from harness.report import format_report
 
 
+def run_tests_for_task(task, workspace: Path, test_runners: dict) -> TestResult:
+    tests_total = 0
+    tests_passed = 0
+    all_passed = True
+    raw_outputs: list[str] = []
+    errors: list[str] = []
+
+    languages = task.test_languages or [task.language]
+    for language in languages:
+        test_runner_config = test_runners.get(language)
+        if not test_runner_config:
+            all_passed = False
+            errors.append(f"No test runner for {language}")
+            continue
+
+        executor = TestExecutor(test_runner_config)
+        result = executor.run(workspace)
+        tests_total += result.tests_total
+        tests_passed += result.tests_passed
+        raw_outputs.append(f"[{language}]\n{result.raw_output}")
+        if not result.passed:
+            all_passed = False
+        if result.error:
+            errors.append(f"{language}: {result.error}")
+
+    return TestResult(
+        tests_total=tests_total,
+        tests_passed=tests_passed,
+        passed=all_passed and not errors,
+        raw_output="\n\n".join(raw_outputs),
+        error="; ".join(errors) if errors else None,
+    )
+
+
 def run_benchmark(tasks_dir: Path = None, config_path: Path = None, dry_run: bool = False):
     root = Path(__file__).parent.parent
     if tasks_dir is None:
@@ -67,17 +101,12 @@ def run_benchmark(tasks_dir: Path = None, config_path: Path = None, dry_run: boo
 
             # Copy tests and run them
             runner.copy_tests(task.tests_dir, workspace)
-            test_runner_config = config.test_runners.get(task.language)
-
-            if test_runner_config:
-                executor = TestExecutor(test_runner_config)
-                test_result = executor.run(workspace)
-            else:
-                print(f"  WARNING: No test runner for language '{task.language}'")
-                test_result = TestResult(
-                    tests_total=0, tests_passed=0, passed=False,
-                    raw_output="", error=f"No test runner for {task.language}",
-                )
+            test_result = run_tests_for_task(task, workspace, config.test_runners)
+            if test_result.error:
+                for err in test_result.error.split("; "):
+                    if err.startswith("No test runner for "):
+                        missing_lang = err.replace("No test runner for ", "")
+                        print(f"  WARNING: No test runner for language '{missing_lang}'")
 
             # Build score
             score = TaskScore(
@@ -104,6 +133,7 @@ def run_benchmark(tasks_dir: Path = None, config_path: Path = None, dry_run: boo
             result_file = agent_dir / f"{task.name}.json"
             result_file.write_text(json.dumps({
                 "task": task.name,
+                "test_languages": task.test_languages,
                 "agent": agent_config.name,
                 "model": agent_config.model,
                 "passed": test_result.passed,

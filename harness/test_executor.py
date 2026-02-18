@@ -61,8 +61,12 @@ class TestExecutor:
 
     @staticmethod
     def parse_jest_output(output: str, returncode: int) -> TestResult:
-        passed_match = re.search(r"(\d+) passed", output)
-        total_match = re.search(r"(\d+) total", output)
+        # Prefer the "Tests:" summary line so we do not accidentally parse
+        # "Test Suites: X total" as the total number of tests.
+        tests_line_match = re.search(r"Tests:\s*(.+)", output)
+        search_scope = tests_line_match.group(1) if tests_line_match else output
+        passed_match = re.search(r"(\d+)\s+passed", search_scope)
+        total_match = re.search(r"(\d+)\s+total", search_scope)
         passed = int(passed_match.group(1)) if passed_match else 0
         total = int(total_match.group(1)) if total_match else 0
         return TestResult(

@@ -9,7 +9,9 @@ agents:
       - "--allowedTools"
       - "Bash,Read,Edit,Write,Glob,Grep"
       - "--no-session-persistence"
-    model: "claude-sonnet-4-6"
+      - "--model"
+      - "{model}"
+    model: "claude-opus-4-6"
     timeout_seconds: 300
 
   codex:
@@ -19,11 +21,12 @@ agents:
       - "{prompt}"
       - "--json"
       - "--ephemeral"
-      - "-a"
-      - "never"
       - "--sandbox"
       - "workspace-write"
-    model: null  # uses default
+      - "--skip-git-repo-check"
+      - "-m"
+      - "{model}"
+    model: "gpt-5.3-codex"
     timeout_seconds: 300
 
 test_runners:

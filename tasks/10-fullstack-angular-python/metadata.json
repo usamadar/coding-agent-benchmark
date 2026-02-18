@@ -1,5 +1,6 @@
 {
     "language": "python",
+    "test_languages": ["python", "typescript"],
     "category": "feature",
     "timeout_seconds": 180
 }

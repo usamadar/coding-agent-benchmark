@@ -42,6 +42,17 @@ Tests:       5 passed, 5 total
     assert result.passed is True
 
 
+def test_parse_jest_output_prefers_tests_over_suites():
+    output = """
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+"""
+    result = TestExecutor.parse_jest_output(output, returncode=0)
+    assert result.tests_total == 5
+    assert result.tests_passed == 5
+    assert result.passed is True
+
+
 def test_parse_make_test_output():
     output = """
 [PASS] test_insert

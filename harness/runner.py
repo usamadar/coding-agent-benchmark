@@ -34,12 +34,15 @@ class AgentRunner:
 
     def copy_tests(self, tests_dir: Path, workspace: Path) -> None:
         dest = workspace / "tests"
-        shutil.copytree(tests_dir, dest)
+        shutil.copytree(tests_dir, dest, dirs_exist_ok=True)
 
     def run(self, prompt: str, workspace: Path) -> AgentResult:
         args = [self.config.command]
         for arg in self.config.args:
-            args.append(arg.replace("{prompt}", prompt))
+            rendered = arg.replace("{prompt}", prompt)
+            if self.config.model:
+                rendered = rendered.replace("{model}", self.config.model)
+            args.append(rendered)
 
         if self.config.name == "codex":
             args.extend(["-C", str(workspace)])
