@@ -194,4 +194,4 @@ python3 -m pytest tests/ -v
 
 ## License
 
-Internal use.
+MIT
