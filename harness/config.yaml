@@ -26,6 +26,8 @@ agents:
       - "--skip-git-repo-check"
       - "-m"
       - "{model}"
+      - "-c"
+      - 'model_reasoning_effort="xhigh"'
     model: "gpt-5.3-codex"
     timeout_seconds: 300
 
