@@ -72,10 +72,10 @@ def run_benchmark(tasks_dir: Path = None, config_path: Path = None, dry_run: boo
         if agents_to_run is not None:
             agents = agents_to_run
         else:
-            # Alternate which agent goes first
+            # Rotate which agent goes first for fairness
             agents = list(config.agents)
-            if task_idx % 2 == 1:
-                agents = list(reversed(agents))
+            rot = task_idx % len(agents)
+            agents = agents[rot:] + agents[:rot]
 
         for agent_config in agents:
             label = f"{agent_config.name} (dry-run)" if dry_run else agent_config.name
