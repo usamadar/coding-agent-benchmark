@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+results/
+node_modules/
+test_runner
+*.dSYM/

@@ -1,0 +1,46 @@
+agents:
+  claude-code:
+    command: "claude"
+    args:
+      - "-p"
+      - "{prompt}"
+      - "--output-format"
+      - "json"
+      - "--allowedTools"
+      - "Bash,Read,Edit,Write,Glob,Grep"
+      - "--no-session-persistence"
+    model: "claude-sonnet-4-6"
+    timeout_seconds: 300
+
+  codex:
+    command: "codex"
+    args:
+      - "exec"
+      - "{prompt}"
+      - "--json"
+      - "--ephemeral"
+      - "-a"
+      - "never"
+      - "--sandbox"
+      - "workspace-write"
+    model: null  # uses default
+    timeout_seconds: 300
+
+test_runners:
+  python:
+    command: "python3 -m pytest {test_dir} -v --tb=short"
+    pattern: "tests/"
+  typescript:
+    command: "cd {workspace} && npm install --quiet 2>/dev/null && npx jest {test_dir} --verbose"
+    pattern: "tests/"
+  angular:
+    command: "npx ng test --watch=false --browsers=ChromeHeadless"
+    pattern: "tests/"
+  c:
+    command: "cd {workspace} && make test"
+    pattern: "tests/"
+  cpp:
+    command: "cd {workspace} && make test"
+    pattern: "tests/"
+
+results_dir: "results"
